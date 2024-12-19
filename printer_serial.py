@@ -1,7 +1,7 @@
 import serial
 import os
 import time
-from win32print import OpenPrinter, GetPrinter, PRINTER_STATUS, PRINTER_INFO_2
+import cups  # Import pycups untuk interaksi dengan printer di Linux
 
 # Tentukan port serial yang digunakan untuk Arduino (sesuaikan dengan port yang digunakan Raspberry Pi)
 port_name = "/dev/ttyACM0"  # Ganti dengan port serial yang sesuai
@@ -12,13 +12,18 @@ printer_name = "EPSON_TM_U220B"  # Ganti dengan nama printer yang sesuai
 
 def check_printer_status(printer_name):
     try:
-        # Buka printer
-        printer = OpenPrinter(printer_name)
-        printer_info = GetPrinter(printer, 2)  # Mendapatkan informasi printer
-        status = printer_info[0][PRINTER_STATUS]
-        
-        # Menentukan apakah status printer mengindikasikan masalah
-        has_problem = (status & (0x00000002 | 0x00000010 | 0x00000020 | 0x00000040)) != 0
+        # Membuat koneksi ke server CUPS
+        conn = cups.Connection()
+
+        # Mendapatkan status printer
+        printer_status = conn.getPrinterAttributes(printer_name)
+
+        # Memeriksa status printer (status 3 berarti offline)
+        status = printer_status.get('printer-state', None)
+
+        # Jika status printer 3, berarti printer offline
+        has_problem = (status == 3)
+
         return has_problem
     except Exception as e:
         print(f"Error checking printer status: {e}")
