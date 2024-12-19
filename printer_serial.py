@@ -1,10 +1,10 @@
 import serial
-import time
 import subprocess
+import time
 
-# Fungsi untuk menghapus null byte dari data
+# Fungsi untuk menghapus null byte
 def remove_null_bytes(data):
-    return data.replace('\0', '')
+    return data.replace('\x00', '')
 
 # Fungsi untuk meng-escape karakter khusus di dalam data
 def escape_shell_characters(data):
@@ -15,8 +15,8 @@ def escape_shell_characters(data):
     return data
 
 # Tentukan port serial Arduino
-arduino_port = "/dev/ttyACM0"
-baud_rate = 9600
+arduino_port = "/dev/ttyACM0"  # Sesuaikan dengan port yang digunakan oleh Arduino
+baud_rate = 9600  # Sesuaikan dengan baud rate Arduino
 
 # Membuka koneksi serial ke Arduino
 try:
