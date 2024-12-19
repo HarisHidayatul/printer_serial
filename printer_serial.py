@@ -50,11 +50,11 @@ def connect_to_printer():
                 print(f"Printer {printer_name} is connected.")
                 return True
             else:
-                print(f"Printer {printer_name} is disconnected. Waiting for 3 seconds...")
-                time.sleep(3)  # Tunggu 3 detik sebelum mencoba lagi
+                print(f"Printer {printer_name} is disconnected. Waiting for 5 seconds...")  # Menambah waktu tunggu
+                time.sleep(5)  # Tunggu 5 detik sebelum mencoba lagi
         except Exception as e:
             print(f"Error checking printer status: {e}")
-            time.sleep(3)  # Tunggu 3 detik sebelum mencoba lagi
+            time.sleep(5)  # Tunggu 5 detik sebelum mencoba lagi
 
 def read_from_arduino():
     arduino = connect_to_arduino()  # Coba sambungkan ke Arduino
@@ -80,7 +80,7 @@ def read_from_arduino():
 
         # Cek status printer dan kirim ke Arduino
         printer_status = check_printer_status(printer_name)
-        status_to_send = "1" if printer_status else "0"
+        status_to_send = "1" if not printer_status else "0"
 
         # Kirim status printer ke Arduino
         arduino.write(status_to_send.encode())
@@ -91,7 +91,7 @@ def read_from_arduino():
             print("Arduino disconnected. Trying to reconnect...")
             arduino = connect_to_arduino()  # Sambungkan kembali ke Arduino
 
-        # Cek status printer secara berkala
+        # Cek status printer secara berkala (interval lebih besar)
         if not check_printer_status(printer_name):
             print("Printer disconnected. Trying to reconnect...")
             connect_to_printer()  # Sambungkan kembali ke printer
