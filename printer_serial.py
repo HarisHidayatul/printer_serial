@@ -66,6 +66,9 @@ def main():
                     monitor_printer_status()
                     last_data_received_time = time.time()
 
+            # Print karakter khusus ke printer
+            send_to_printer("Printing special characters: ~`!@#$%^&*()_-=+[{]}|:;'<,.>?/")
+
         except Exception as e:
             print(f"Error reading from serial port: {e}")
             break
