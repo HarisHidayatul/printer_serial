@@ -6,7 +6,7 @@ import subprocess
 def send_to_printer(data):
     try:
         # Menyaring data yang valid dan mengirimkan ke printer
-        echo_command = f'echo -e "{data}" | lp -d EPSON_TM_U220B'
+        echo_command = f'echo "{data}" | lp -d EPSON_TM_U220B'
         print(f"Executing command: {echo_command}")  # Debug: Menampilkan perintah yang akan dijalankan
         process = subprocess.Popen(echo_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
