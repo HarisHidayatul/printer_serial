@@ -9,7 +9,7 @@ def remove_null_bytes(data):
 # Fungsi untuk meng-escape karakter khusus di dalam data
 def escape_shell_characters(data):
     # Mengganti karakter yang dapat menyebabkan masalah dalam shell
-    special_chars = ['$', '`', '"', "'", '\\']
+    special_chars = ['$', '`', '"', "'", '\\', '\n', '\r', '\t']
     for char in special_chars:
         data = data.replace(char, '\\' + char)  # Menambahkan escape sebelum karakter khusus
     return data
@@ -45,8 +45,14 @@ while True:
             try:
                 # Menyaring data yang valid dan mengirimkan ke printer
                 echo_command = f"echo -e \"{escaped_data}\" | lp -d EPSON_TM_U220B"
-                subprocess.run(echo_command, shell=True, check=True)
-                print("Data sent to printer successfully")
+                print(f"Executing command: {echo_command}")  # Debug: Menampilkan perintah yang akan dijalankan
+                process = subprocess.Popen(echo_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = process.communicate()
+
+                if process.returncode == 0:
+                    print("Data sent to printer successfully")
+                else:
+                    print(f"Error while sending to printer: {stderr.decode()}")
             except Exception as e:
                 print(f"Error while sending to printer: {e}")
 
