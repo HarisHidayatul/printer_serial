@@ -1,23 +1,11 @@
-import subprocess
+import serial
 
-def check_printer():
-    # Jalankan perintah lsusb dan ambil hasilnya
-    result = subprocess.run(['lsusb'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    
-    # Jika perintah berhasil
-    if result.returncode == 0:
-        # Periksa setiap baris output lsusb
-        for line in result.stdout.splitlines():
-            # Mencari printer Epson berdasarkan ID vendor (misalnya 0x04b8 untuk Epson)
-            if 'EPSON' in line:
-                print("Printer Epson ditemukan:", line)
-                return True
-        print("Printer Epson tidak ditemukan.")
-        return False
-    else:
-        print("Error menjalankan lsusb:", result.stderr)
-        return False
+# Ganti dengan port printer yang sesuai
+printer_port = '/dev/usb/lp0'
 
-# Memanggil fungsi untuk memeriksa keberadaan printer
-if __name__ == "__main__":
-    check_printer()
+# Membuka koneksi serial ke printer
+with serial.Serial(printer_port, 9600) as printer:
+    # ESC/POS command untuk memulai pencetakan
+    printer.write(b'\x1B\x40')  # Reset printer
+    printer.write(b'Hello, Printer!\n')  # Kirim teks ke printer
+    printer.write(b'\x1D\x56\x41')  # Feed paper dan cut (perintah ESC/POS untuk potong kertas)
