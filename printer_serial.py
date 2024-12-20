@@ -1,8 +1,15 @@
 import cups
+import os
 
 def get_printer_status(printer_name):
     conn = cups.Connection()
     printers = conn.getPrinters()
+
+    # Verifikasi keberadaan perangkat USB
+    usb_devices = os.popen('lsusb').read()
+    if "EPSON" not in usb_devices:
+        return "Printer not connected"
+
     if printer_name in printers:
         status = printers[printer_name]['printer-state']
         if status == 3:
