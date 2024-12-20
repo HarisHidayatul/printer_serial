@@ -4,7 +4,7 @@ import time
 import cups  # Import pycups untuk interaksi dengan printer di Linux
 
 # Tentukan port serial yang digunakan untuk Arduino (sesuaikan dengan port yang digunakan Raspberry Pi)
-port_name = "/dev/ttyACM0"  # Ganti dengan port serial yang sesuai
+port_name = "/dev/ttyUSB0"  # Ganti dengan port serial yang sesuai
 baud_rate = 9600  # Baud rate yang digunakan pada Arduino
 
 # Nama printer yang digunakan
