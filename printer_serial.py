@@ -1,5 +1,6 @@
 import serial
 import subprocess
+import shlex  # Untuk mengamankan argumen shell
 
 # Konfigurasi port serial
 PORT_NAME = "/dev/ttyUSB0"  # Sesuaikan dengan port Arduino Anda
@@ -22,8 +23,9 @@ def connect_to_arduino():
 def send_to_printer(data):
     """Mengirim data langsung ke printer."""
     try:
-        # Gunakan subprocess untuk mencetak data
-        command = f'echo "{data}" | lp -d {PRINTER_NAME}'
+        # Gunakan shlex.quote untuk menangani karakter khusus dengan aman
+        safe_data = shlex.quote(data)
+        command = f'echo {safe_data} | lp -d {PRINTER_NAME}'
         subprocess.run(command, shell=True, check=True)
         print(f"Data sent to printer: {data}")
     except subprocess.CalledProcessError as e:
