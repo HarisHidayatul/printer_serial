@@ -1,18 +1,18 @@
-import requests
+import subprocess
 
-# Ganti dengan nama printer yang sesuai
+def test_print(printer_name):
+    try:
+        # Mengirim perintah print menggunakan lp
+        result = subprocess.run(
+            ["lp", "-d", printer_name, "-o", "raw", "/dev/null"],  # /dev/null berarti tidak ada dokumen yang dicetak
+            check=True,  # Jika perintah gagal, akan memunculkan exception
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        print("1")  # Berhasil mencetak
+    except subprocess.CalledProcessError:
+        print("0")  # Gagal mencetak
+
+# Ganti dengan nama printer Anda
 printer_name = "EPSON_TM_U220B"
-
-# URL untuk mendapatkan status printer melalui CUPS
-cups_url = f"http://localhost:631/printers/{printer_name}"
-
-# Mengirim permintaan GET ke CUPS untuk mendapatkan status printer
-try:
-    response = requests.get(cups_url)
-    if response.status_code == 200:
-        # Mencetak status printer
-        print(f"Printer Status: {response.text}")
-    else:
-        print(f"Failed to retrieve printer status. Status Code: {response.status_code}")
-except requests.exceptions.RequestException as e:
-    print(f"Error: {e}")
+test_print(printer_name)
