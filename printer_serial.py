@@ -1,4 +1,9 @@
+import os
 import cups
+import time
+
+# Nama printer yang digunakan
+printer_name = "EPSON_TM_U220B"  # Ganti dengan nama printer yang sesuai
 
 def check_printer_status(printer_name):
     try:
@@ -8,10 +13,15 @@ def check_printer_status(printer_name):
         # Mendapatkan status printer
         printer_status = conn.getPrinterAttributes(printer_name)
 
-        # Memeriksa status printer (status 3 berarti offline)
-        status = printer_status.get('printer-state', None)
+        # Menampilkan status printer secara detail
+        print(f"Printer status details: {printer_status}")
 
-        # Menampilkan status printer
+        # Memeriksa status printer
+        status = printer_status.get('printer-state', None)
+        if status is None:
+            return "Error: Unable to fetch printer status"
+
+        # Status Printer
         if status == 3:
             return "Printer offline"
         elif status == 2:
@@ -23,26 +33,35 @@ def check_printer_status(printer_name):
     except Exception as e:
         return f"Error checking printer status: {e}"
 
-def print_test_page(printer_name, message):
-    try:
-        # Menentukan printer
-        conn = cups.Connection()
+def print_test_message():
+    # Pesan uji untuk dicetak
+    message = "Test print from Raspberry Pi\n\n\n"
+    
+    # Menggunakan perintah lp untuk mencetak
+    command = f'echo -e "{message}" | lp -d {printer_name}'
+    
+    # Eksekusi perintah untuk mencetak
+    result = os.system(command)
+    if result == 0:
+        print("Print successful")
+    else:
+        print("Print failed")
+
+def main():
+    while True:
+        # Cek status printer setiap 5 detik
+        printer_status = check_printer_status(printer_name)
+        print(f"Printer Status: {printer_status}")
         
-        # Mengirim perintah untuk mencetak
-        conn.printFile(printer_name, "/dev/null", "Test Print", {"text": message})
-        print(f"Successfully printed: {message}")
-    except Exception as e:
-        print(f"Error printing: {e}")
+        # Jika printer dalam status idle, coba cetak
+        if printer_status == "Printer idle":
+            print("Printer is idle. Printing test message...")
+            print_test_message()
+        else:
+            print("Printer is not idle, cannot print.")
+        
+        # Tunggu 5 detik sebelum memeriksa status printer lagi
+        time.sleep(5)
 
 if __name__ == "__main__":
-    printer_name = "EPSON_TM_U220B"  # Ganti dengan nama printer yang sesuai
-    
-    # Periksa status printer
-    status = check_printer_status(printer_name)
-    print(f"Printer Status: {status}")
-    
-    # Jika printer online, lakukan pencetakan
-    if "idle" in status.lower() or "printing" in status.lower():
-        print_test_page(printer_name, "Test print from Python using CUPS.")
-    else:
-        print("Printer is not online, cannot print.")
+    main()
