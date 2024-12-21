@@ -1,45 +1,44 @@
 import cups
-import time
-import subprocess
 
-# Fungsi untuk melakukan pencetakan dengan lp dan memeriksa status
-def print_and_check_status():
+# Fungsi untuk memeriksa status pekerjaan cetak terakhir
+def check_print_status():
     try:
         # Tentukan nama printer (ganti dengan nama printer Anda)
         printer_name = "EPSON_TM_U220B"
 
-        # Perintah untuk mencetak menggunakan lp
-        print_command = "echo 'Test print from Raspberry Pi\n\n\n' | lp -d {}".format(printer_name)
-        
-        # Jalankan perintah untuk mencetak
-        subprocess.run(print_command, shell=True)
-
-        # Tunggu sebentar agar CUPS memproses pekerjaan cetak
-        time.sleep(5)  # Menunggu lebih lama agar printer memproses
-
         # Koneksi ke CUPS
         conn = cups.Connection()
 
-        # Ambil daftar pekerjaan cetak yang sedang berjalan
+        # Ambil daftar pekerjaan cetak yang sedang berjalan atau sudah selesai
         jobs = conn.getJobs()
 
-        # Periksa apakah ada pekerjaan cetak yang berhasil
+        # Jika ada pekerjaan yang terdaftar
         if jobs:
-            for job_id, job_info in jobs.items():
-                print(f"Job ID: {job_id}, Status: {job_info['status']}")  # Debugging: menampilkan status pekerjaan
-                if job_info["printer"] == printer_name and job_info["status"] == "completed":
-                    return 1  # Pencetakan berhasil
+            # Mengambil pekerjaan terakhir yang tercatat
+            last_job_id = list(jobs.keys())[-1]
+            job_info = jobs[last_job_id]
 
-        # Jika pekerjaan cetak tidak ditemukan atau tidak "completed"
-        return 0  # Pencetakan gagal
+            # Debugging status dan state pekerjaan
+            print(f"Last Job ID: {last_job_id}, Status: {job_info.get('status', 'No Status')}, State: {job_info.get('state', 'No State')}")
+
+            # Memeriksa apakah pekerjaan terakhir sudah selesai
+            if job_info.get('state') == 'completed':
+                print("Print Job Completed Successfully.")
+                return 1  # Pencetakan berhasil
+            else:
+                print("Print Job Not Completed Yet.")
+                return 0  # Pencetakan belum selesai atau gagal
+        else:
+            print("No print jobs found.")
+            return 0  # Tidak ada pekerjaan cetak yang terdaftar
 
     except Exception as e:
         # Jika ada kesalahan, kembalikan 0
-        print(f"Error: {e}")  # Debugging: menampilkan error
+        print(f"Error: {e}")
         return 0
 
-# Panggil fungsi untuk melakukan pencetakan dan pengecekan status
-status = print_and_check_status()
+# Panggil fungsi untuk memeriksa status pekerjaan cetak terakhir
+status = check_print_status()
 
-# Tampilkan status hasil pencetakan
+# Tampilkan status hasil pengecekan
 print(status)
