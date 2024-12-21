@@ -46,5 +46,5 @@ def main():
             print(f"Error: {e}")
             arduino = connect_to_arduino()  # Reconnect jika ada masalah
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()
