@@ -15,7 +15,7 @@ def print_and_check_status():
         subprocess.run(print_command, shell=True)
 
         # Tunggu sebentar agar CUPS memproses pekerjaan cetak
-        time.sleep(2)
+        time.sleep(5)  # Menunggu lebih lama agar printer memproses
 
         # Koneksi ke CUPS
         conn = cups.Connection()
@@ -26,6 +26,7 @@ def print_and_check_status():
         # Periksa apakah ada pekerjaan cetak yang berhasil
         if jobs:
             for job_id, job_info in jobs.items():
+                print(f"Job ID: {job_id}, Status: {job_info['status']}")  # Debugging: menampilkan status pekerjaan
                 if job_info["printer"] == printer_name and job_info["status"] == "completed":
                     return 1  # Pencetakan berhasil
 
@@ -34,6 +35,7 @@ def print_and_check_status():
 
     except Exception as e:
         # Jika ada kesalahan, kembalikan 0
+        print(f"Error: {e}")  # Debugging: menampilkan error
         return 0
 
 # Panggil fungsi untuk melakukan pencetakan dan pengecekan status
