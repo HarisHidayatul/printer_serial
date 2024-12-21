@@ -1,18 +1,18 @@
-import subprocess
+import serial
 
-def is_printer_connected(vendor_id, product_id):
-    result = subprocess.run(['lsusb'], stdout=subprocess.PIPE, text=True)
-    devices = result.stdout.splitlines()
-    for device in devices:
-        if f"{vendor_id}:{product_id}" in device:
-            return True
-    return False
+def print_receipt():
+    try:
+        # Hubungkan ke printer
+        printer = serial.Serial('/dev/usb/lp0', baudrate=9600, timeout=1)
 
-# Ganti vendor_id dan product_id sesuai printer Anda
-VENDOR_ID = "04b8"  # EPSON Vendor ID
-PRODUCT_ID = "0202"  # Contoh Product ID untuk TM-U220B
+        # ESC/POS Commands
+        printer.write(b'\x1b\x40')  # Initialize printer
+        printer.write(b'Hello, this is a test print!\n')
+        printer.write(b'\n\n\n')  # Line feeds for spacing
+        printer.close()
 
-if is_printer_connected(VENDOR_ID, PRODUCT_ID):
-    print("Printer is connected.")
-else:
-    print("Printer is not connected.")
+        print("Print successful!")
+    except Exception as e:
+        print(f"Error: {e}")
+
+print_receipt()
