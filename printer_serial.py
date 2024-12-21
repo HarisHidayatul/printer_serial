@@ -1,18 +1,27 @@
-import serial
+import cups
 
-def print_receipt():
+# Fungsi untuk mengirimkan print job
+def test_print():
     try:
-        # Hubungkan ke printer
-        printer = serial.Serial('/dev/usb/lp0', baudrate=9600, timeout=1)
+        # Koneksi ke CUPS
+        conn = cups.Connection()
 
-        # ESC/POS Commands
-        printer.write(b'\x1b\x40')  # Initialize printer
-        printer.write(b'Hello, this is a test print!\n')
-        printer.write(b'\n\n\n')  # Line feeds for spacing
-        printer.close()
+        # Dapatkan daftar printer yang terhubung
+        printers = conn.getPrinters()
 
-        print("Print successful!")
+        # Tentukan nama printer (ganti dengan nama printer Anda)
+        printer_name = "EPSON_TM_U220B"
+
+        # Periksa apakah printer tersedia
+        if printer_name in printers:
+            # Mencetak satu karakter
+            conn.printText(printer_name, "A")
+            print(1)  # Berhasil
+        else:
+            print(0)  # Printer tidak ditemukan
     except Exception as e:
+        print(0)  # Jika ada kesalahan
         print(f"Error: {e}")
 
-print_receipt()
+# Jalankan tes print
+test_print()
