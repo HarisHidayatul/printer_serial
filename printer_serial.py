@@ -1,46 +1,40 @@
 import cups
 import time
 import os
+import subprocess
 
-# Fungsi untuk mengirimkan karakter ke printer
-def send_character_to_printer(character):
+# Fungsi untuk melakukan pencetakan dengan lp dan memeriksa status
+def print_and_check_status():
     try:
-        # Koneksi ke CUPS
-        conn = cups.Connection()
-
         # Tentukan nama printer (ganti dengan nama printer Anda)
         printer_name = "EPSON_TM_U220B"
 
-        # Periksa apakah printer tersedia
-        printers = conn.getPrinters()
-        if printer_name in printers:
-            # Buat file teks sementara untuk dicetak
-            temp_file = "/tmp/test_print.txt"
+        # Perintah untuk mencetak menggunakan lp
+        print_command = "echo -e 'Test print from Raspberry Pi\n\n\n' | lp -d {}".format(printer_name)
+        
+        # Jalankan perintah untuk mencetak
+        subprocess.run(print_command, shell=True)
 
-            while True:
-                with open(temp_file, "w") as f:
-                    f.write(character)  # Tulis karakter untuk tes print
+        # Tunggu sebentar agar CUPS memproses pekerjaan cetak
+        time.sleep(2)
 
-                # Mencetak file
-                job_id = conn.printFile(printer_name, temp_file, "Test Print", {})
+        # Koneksi ke CUPS
+        conn = cups.Connection()
 
-                # Tunggu sebentar untuk memastikan print job diproses
-                time.sleep(2)
+        # Ambil daftar pekerjaan cetak yang sedang berjalan
+        jobs = conn.getJobs()
 
-                # Jika job_id berhasil, cetak 1, hapus file dan keluar
-                if job_id:
-                    print(1)  # Berhasil
-                    os.remove(temp_file)  # Hapus file setelah berhasil dicetak
-                    break  # Keluar dari loop
-                else:
-                    print(0)  # Gagal
-                    os.remove(temp_file)  # Hapus file sementara jika gagal
-                    time.sleep(2)  # Tunggu sebelum mencoba lagi
-        else:
-            print(0)  # Printer tidak ditemukan
+        # Periksa apakah ada pekerjaan cetak yang berhasil
+        if jobs:
+            for job_id, job_info in jobs.items():
+                if job_info["printer"] == printer_name and job_info["status"] == "completed":
+                    print(1)  # Pencetakan berhasil
+                    return
+        # Jika tidak ada pekerjaan cetak atau status tidak "completed"
+        print(0)  # Pencetakan gagal
     except Exception as e:
         print(0)  # Jika ada kesalahan
         print(f"Error: {e}")
 
-# Kirim karakter "A" ke printer
-send_character_to_printer("A")
+# Panggil fungsi untuk melakukan pencetakan dan pengecekan status
+print_and_check_status()
