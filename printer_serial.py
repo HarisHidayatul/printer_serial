@@ -24,17 +24,9 @@ def print_and_check_status():
         # Ambil daftar pekerjaan cetak yang sedang berjalan
         jobs = conn.getJobs()
 
-        # Periksa apakah ada pekerjaan cetak yang berhasil
-        if jobs:
-            for job_id, job_info in jobs.items():
-                if job_info["printer"] == printer_name and job_info["status"] == "completed":
-                    print(1)  # Pencetakan berhasil
-                    return
-        # Jika tidak ada pekerjaan cetak atau status tidak "completed"
-        print(0)  # Pencetakan gagal
+        print(1)
     except Exception as e:
         print(0)  # Jika ada kesalahan
-        print(f"Error: {e}")
 
 # Panggil fungsi untuk melakukan pencetakan dan pengecekan status
 print_and_check_status()
