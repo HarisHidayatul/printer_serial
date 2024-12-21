@@ -30,7 +30,7 @@ def check_print_status():
                 return 0  # Pencetakan belum selesai atau gagal
         else:
             print("No print jobs found.")
-            return 0  # Tidak ada pekerjaan cetak yang terdaftar
+            return 1
 
     except Exception as e:
         # Jika ada kesalahan, kembalikan 0
