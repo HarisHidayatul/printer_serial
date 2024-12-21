@@ -1,11 +1,18 @@
-import serial
+import subprocess
 
-# Ganti dengan port printer yang sesuai
-printer_port = '/dev/usb/lp0'
+def is_printer_connected(vendor_id, product_id):
+    result = subprocess.run(['lsusb'], stdout=subprocess.PIPE, text=True)
+    devices = result.stdout.splitlines()
+    for device in devices:
+        if f"{vendor_id}:{product_id}" in device:
+            return True
+    return False
 
-# Membuka koneksi serial ke printer
-with serial.Serial(printer_port, 9600) as printer:
-    # ESC/POS command untuk memulai pencetakan
-    printer.write(b'\x1B\x40')  # Reset printer
-    printer.write(b'Hello, Printer!\n')  # Kirim teks ke printer
-    printer.write(b'\x1D\x56\x41')  # Feed paper dan cut (perintah ESC/POS untuk potong kertas)
+# Ganti vendor_id dan product_id sesuai printer Anda
+VENDOR_ID = "04b8"  # EPSON Vendor ID
+PRODUCT_ID = "0202"  # Contoh Product ID untuk TM-U220B
+
+if is_printer_connected(VENDOR_ID, PRODUCT_ID):
+    print("Printer is connected.")
+else:
+    print("Printer is not connected.")
