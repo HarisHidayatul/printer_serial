@@ -1,44 +1,50 @@
-import cups
+import serial
+import subprocess
+import shlex  # Untuk mengamankan argumen shell
 
-# Fungsi untuk memeriksa status pekerjaan cetak terakhir
-def check_print_status():
+# Konfigurasi port serial
+PORT_NAME = "/dev/ttyUSB0"  # Sesuaikan dengan port Arduino Anda
+BAUD_RATE = 9600  # Sesuaikan dengan baud rate Arduino Anda
+
+# Konfigurasi printer
+PRINTER_NAME = "EPSON_TM_U220B"  # Sesuaikan dengan nama printer Anda
+
+def connect_to_arduino():
+    """Mencoba terhubung ke Arduino melalui port serial."""
+    while True:
+        try:
+            arduino = serial.Serial(PORT_NAME, BAUD_RATE, timeout=1)
+            print(f"Connected to Arduino at {PORT_NAME}")
+            return arduino
+        except serial.SerialException as e:
+            print(f"Error connecting to Arduino: {e}")
+            print("Retrying...")
+
+def send_to_printer(data):
+    """Mengirim data langsung ke printer."""
     try:
-        # Tentukan nama printer (ganti dengan nama printer Anda)
-        printer_name = "EPSON_TM_U220B"
+        # Gunakan shlex.quote untuk menangani karakter khusus dengan aman
+        safe_data = shlex.quote(data)
+        command = f'echo {safe_data} | lp -d {PRINTER_NAME}'
+        subprocess.run(command, shell=True, check=True)
+        print(f"Data sent to printer: {data}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error sending data to printer: {e}")
 
-        # Koneksi ke CUPS
-        conn = cups.Connection()
+def main():
+    """Membaca data dari Arduino dan mencetaknya ke printer."""
+    arduino = connect_to_arduino()
+    while True:
+        try:
+            if arduino.in_waiting > 0:
+                # Membaca data dari Arduino
+                data = arduino.readline().decode('ascii', errors='ignore').strip()
+                print(f"Data received from Arduino: {data}")
+                # Kirim data ke printer
+                send_to_printer(data)
+        except Exception as e:
+            print(f"Error: {e}")
+            arduino = connect_to_arduino()  # Reconnect jika ada masalah
 
-        # Ambil daftar pekerjaan cetak yang sedang berjalan atau sudah selesai
-        jobs = conn.getJobs()
-
-        # Jika ada pekerjaan yang terdaftar
-        if jobs:
-            # Mengambil pekerjaan terakhir yang tercatat
-            last_job_id = list(jobs.keys())[-1]
-            job_info = jobs[last_job_id]
-
-            # Debugging status dan state pekerjaan
-            print(f"Last Job ID: {last_job_id}, Status: {job_info.get('status', 'No Status')}, State: {job_info.get('state', 'No State')}")
-
-            # Memeriksa apakah pekerjaan terakhir sudah selesai
-            if job_info.get('state') == 'completed':
-                print("Print Job Completed Successfully.")
-                return 1  # Pencetakan berhasil
-            else:
-                print("Print Job Not Completed Yet.")
-                return 0  # Pencetakan belum selesai atau gagal
-        else:
-            print("No print jobs found.")
-            return 1
-
-    except Exception as e:
-        # Jika ada kesalahan, kembalikan 0
-        print(f"Error: {e}")
-        return 0
-
-# Panggil fungsi untuk memeriksa status pekerjaan cetak terakhir
-status = check_print_status()
-
-# Tampilkan status hasil pengecekan
-print(status)
+if _name_ == "_main_":
+    main()
