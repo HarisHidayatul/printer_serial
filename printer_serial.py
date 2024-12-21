@@ -56,18 +56,18 @@ def check_print_status():
             # Memeriksa apakah pekerjaan terakhir sudah selesai
             if job_info.get('state') == 'completed':
                 print("Print Job Completed Successfully.")
-                return 0  # Printer OK
+                return 1  # Pencetakan berhasil
             else:
-                print("Print Job Not Completed Yet or Error Occurred.")
-                return 1  # Printer Error
+                print("Print Job Not Completed Yet.")
+                return 0  # Pencetakan belum selesai atau gagal
         else:
             print("No print jobs found.")
-            return 1  # Printer Error (No jobs found)
+            return 1
 
     except Exception as e:
-        # Jika ada kesalahan, kembalikan 1 (Printer Error)
+        # Jika ada kesalahan, kembalikan 0
         print(f"Error: {e}")
-        return 1  # Printer Error
+        return 0
 
 # Fungsi utama untuk membaca data dari Arduino dan memeriksa status printer
 def main():
