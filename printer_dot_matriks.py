@@ -6,6 +6,7 @@ p = Usb(0x04b8, 0x0202)  # Vendor ID: 0x04b8, Product ID: 0x0202
 
 # Inisialisasi printer
 p.text("Printing 10 dots horizontal for 256 lines")
+p.text("\n")
 
 # Data bitmap untuk 10 dots horizontal per baris, 256 baris
 bitmap_data = []
@@ -17,7 +18,7 @@ for _ in range(256):
 # m = Mode (0 = 8-dot single-density), nL = Width in bytes (2), nH = High byte (0)
 p._raw(b'\x1B*\x00\xFF\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
 p._raw(bytes(bitmap_data))    # Data bitmap
-
+p.text("\n")
 # Feed kertas dan potong
 p.text("256 lines of 10 horizontal dots printed\n\n")
 
