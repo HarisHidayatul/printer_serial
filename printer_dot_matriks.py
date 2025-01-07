@@ -13,26 +13,23 @@ def create_bitmap(width, height):
     # Setiap baris gambar (tinggi)
     for _ in range(height):
         # Semua byte penuh (semua titik hitam)
-        bitmap.extend([0b11111111] * (num_bytes - 1))  # Semua byte penuh
-        remaining_bits = width % 8  # Sisa titik setelah byte penuh
-        if remaining_bits > 0:
-            bitmap.append((1 << remaining_bits) - 1)  # Tambahkan byte terakhir dengan sisa titik
+        bitmap.extend([0b11111111] * num_bytes)  # Semua byte penuh untuk mencetak titik hitam penuh
     
     return bitmap
 
 # Inisialisasi printer
-p.text("Printing 576 dots horizontal and 200 dots vertical\n\n")
+p.text("Printing 1000 dots horizontal and 1 dot vertical\n\n")
 
-# Data bitmap untuk 576 dots horizontal dan 200 dots vertikal
-bitmap_data = create_bitmap(576, 200)
+# Data bitmap untuk 1000 dots horizontal dan 1 dot vertikal
+bitmap_data = create_bitmap(1000, 1)
 
 # ESC/POS Command: Print raster bit image
 # Format: ESC * m nL nH d1...dk
-# m = Mode (0 = 8-dot single-density), nL = Width in bytes (576/8), nH = High byte (0)
-p._raw(b'\x1B*\x00\x90\x00')  # ESC * 0 144 0 (576 dots / 8 = 72 bytes)
+# m = Mode (0 = 8-dot single-density), nL = Width in bytes (1000/8), nH = High byte (0)
+p._raw(b'\x1B*\x00\xC8\x03')  # ESC * 0 200 3 (1000 dots / 8 = 125 bytes, 0xC8 = 200, 0x03 = 3)
 p._raw(bytes(bitmap_data))    # Data bitmap
 
 # Feed kertas dan potong
 p.text("\n\n")
 
-print("576 dots horizontal and 200 dots vertical printed successfully!")
+print("1000 dots horizontal and 1 dot vertical printed successfully!")
