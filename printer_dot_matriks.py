@@ -11,7 +11,6 @@ p.text("Printing 10 dots horizontal for 256 lines\n\n")
 bitmap_data = []
 for _ in range(256):
     bitmap_data.append(0xFF)  # Byte pertama (semua titik hitam)
-    bitmap_data.append(0xFF)  # Byte kedua (semua titik hitam)
 
 # ESC/POS Command: Print raster bit image
 # Format: ESC * m nL nH d1...dk
