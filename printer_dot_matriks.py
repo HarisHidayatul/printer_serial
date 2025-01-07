@@ -5,66 +5,13 @@ from escpos.printer import Usb
 p = Usb(0x04b8, 0x0202)  # Vendor ID: 0x04b8, Product ID: 0x0202
 
 # Inisialisasi printer
-p.text("Printing 10 dots horizontal\n\n")
+p.text("Printing 10 dots horizontal for 256 lines\n\n")
 
-# Data bitmap untuk 10 dots horizontal
-# 10 dots = 2 bytes (karena 10/8 = 1 byte penuh + 2 dots tambahan)
-bitmap_data = [
-    0b11111111,  # Byte 1: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 2: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 3: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 4: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 5: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 6: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 7: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 8: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 9: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 10: 8 dots penuh (semua hitam)
-    
-    0b11111111,  # Byte 1: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 2: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 3: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 4: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 5: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 6: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 7: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 8: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 9: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 10: 8 dots penuh (semua hitam)
-    
-    0b11111111,  # Byte 1: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 2: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 3: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 4: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 5: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 6: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 7: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 8: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 9: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 10: 8 dots penuh (semua hitam)
-    
-    0b11111111,  # Byte 1: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 2: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 3: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 4: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 5: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 6: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 7: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 8: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 9: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 10: 8 dots penuh (semua hitam)
-    
-    0b11111111,  # Byte 1: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 2: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 3: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 4: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 5: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 6: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 7: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 8: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 9: 8 dots penuh (semua hitam)
-    0b11111111,  # Byte 10: 8 dots penuh (semua hitam)
-]
+# Data bitmap untuk 10 dots horizontal per baris, 256 baris
+bitmap_data = []
+for _ in range(256):
+    bitmap_data.append(0b11111111)  # Byte pertama (8 dots penuh)
+    bitmap_data.append(0b00000011)  # Byte kedua (2 dots penuh + 6 kosong)
 
 # ESC/POS Command: Print raster bit image
 # Format: ESC * m nL nH d1...dk
@@ -74,6 +21,6 @@ p._raw(bytes(bitmap_data))    # Data bitmap
 
 # Feed kertas dan potong
 p.text("\n\n")
-p.text("Total horizontal dots printed: 10\n\n")
+p.text("256 lines of 10 horizontal dots printed\n\n")
 
-print("10 dots horizontal printed successfully!")
+print("256 lines of 10 dots horizontal printed successfully!")
