@@ -25,21 +25,25 @@ p.text("Printing multiple rows with increasing dots\n\n")
 bitmap_data_1 = create_bitmap(50)
 p._raw(b'\x1B*\x00\x07\x00')  # ESC * 0 7 0
 p._raw(bytes(bitmap_data_1))  # Data bitmap baris 1
+p.text("\n")
 
 # Baris 2: 100 dots
 bitmap_data_2 = create_bitmap(100)
 p._raw(b'\x1B*\x00\x13\x00')  # ESC * 0 19 0
 p._raw(bytes(bitmap_data_2))  # Data bitmap baris 2
+p.text("\n")
 
 # Baris 3: 150 dots
 bitmap_data_3 = create_bitmap(150)
 p._raw(b'\x1B*\x00\x1E\x00')  # ESC * 0 30 0
 p._raw(bytes(bitmap_data_3))  # Data bitmap baris 3
+p.text("\n")
 
 # Baris 4: 200 dots
 bitmap_data_4 = create_bitmap(200)
 p._raw(b'\x1B*\x00\x28\x00')  # ESC * 0 40 0
 p._raw(bytes(bitmap_data_4))  # Data bitmap baris 4
+p.text("\n")
 
 # Baris 5: 1000 dots
 bitmap_data_5 = create_bitmap(1000)
