@@ -65,7 +65,7 @@ def check_print_status():
             return 0
 
     except Exception as e:
-        # Jika ada kesalahan, kembalikan 0
+        # Jika ada kesalahan, kembalikan 1
         print(f"Error: {e}")
         return 1
 
