@@ -5,20 +5,23 @@ from escpos.printer import Usb
 p = Usb(0x04b8, 0x0202)  # Vendor ID: 0x04b8, Product ID: 0x0202
 
 # Inisialisasi printer
-p.text("Printing full horizontal line of dots\n\n")
+p.text("Printing 10 dots horizontal\n\n")
 
-# Data bitmap untuk baris penuh dots horizontal
-# 576 dots (576 / 8 = 72 bytes) dengan semua bits aktif (semua hitam)
-bitmap_data = [0b11111111] * 72  # Semua bit dalam 72 byte diisi penuh (semua hitam)
+# Data bitmap untuk 10 dots horizontal
+# 10 dots = 2 bytes (karena 10/8 = 1 byte penuh + 2 dots tambahan)
+bitmap_data = [
+    0b11111111,  # Byte 1: 8 dots penuh (semua hitam)
+    0b11000000,  # Byte 2: 2 dots hitam, sisanya putih
+]
 
 # ESC/POS Command: Print raster bit image
 # Format: ESC * m nL nH d1...dk
-# m = Mode (0 = 8-dot single-density), nL = Width in bytes (72), nH = High byte (0)
-p._raw(b'\x1B*\x00\x48\x00')  # ESC * 0 72 0 (576 dots / 8 = 72 bytes)
+# m = Mode (0 = 8-dot single-density), nL = Width in bytes (2), nH = High byte (0)
+p._raw(b'\x1B*\x00\x02\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
 p._raw(bytes(bitmap_data))    # Data bitmap
 
 # Feed kertas dan potong
 p.text("\n\n")
-p.text(f"Total horizontal dots printed: 576\n\n")  # Jumlah total dot horizontal (maksimum 576)
+p.text("Total horizontal dots printed: 10\n\n")
 
-print("Full horizontal line of dots printed successfully!")
+print("10 dots horizontal printed successfully!")
