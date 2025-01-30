@@ -1,35 +1,29 @@
 from escpos.printer import Usb
 
-# Konfigurasi USB untuk Epson TM-U220B (sesuaikan dengan ID Vendor dan ID Produk)
-# ID Vendor dan Produk bisa didapatkan dari `lsusb`
+# Konfigurasi USB untuk Epson TM-U220B
 p = Usb(0x04b8, 0x0202)  # Vendor ID: 0x04b8, Product ID: 0x0202
 
 # Inisialisasi printer
-# p.text("Printing 10 dots horizontal for 200 lines")
 p.text("\n")
 
-# Data bitmap untuk 10 dots horizontal per baris, 256 baris
-bitmap_data = []
-for _ in range(200):
-    bitmap_data.append(0xFF)  # Byte pertama (semua titik hitam)
+# Lebar gambar dalam bytes (200 bytes = 1600 dots horizontal)
+width_bytes = 200  
+height = 1000  
 
-# ESC/POS Command: Print raster bit image
-# Format: ESC * m nL nH d1...dk
-# m = Mode (0 = 8-dot single-density), nL = Width in bytes (2), nH = High byte (0)
-# C8 200 Baris Maksimal
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
+# Buat bitmap dengan warna hitam penuh (semua titik dicetak)
+bitmap_data = [0xFF] * (width_bytes * height)
 
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
+# Kirim dalam blok maksimal 255 baris per kali cetak
+max_block_height = 255  
+for i in range(0, height, max_block_height):
+    block_size = min(max_block_height, height - i)  # Jika sisa baris kurang dari 255, sesuaikan
+    nL = width_bytes % 256  # 200 % 256 = 200 (0xC8)
+    nH = width_bytes // 256  # 200 // 256 = 0 (0x00)
 
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
+    # ESC/POS Command: Print raster bit image
+    p._raw(bytes([0x1B, 0x2A, 0x00, nL, nH]))  # ESC * 0 200 0
+    p._raw(bytes(bitmap_data[i * width_bytes:(i + block_size) * width_bytes]))  # Kirim data sesuai blok
+    p.text("\n")  # Baris baru setelah setiap blok
 
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
-p.text("\n")
-# Feed kertas dan potong
-# p.text("256 lines of 10 horizontal dots printed\n\n")
-
-# print("256 lines of 10 dots horizontal printed successfully!")
+# Feed kertas dan potong (opsional)
+# p.cut()
