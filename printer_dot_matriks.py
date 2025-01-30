@@ -10,7 +10,7 @@ p.text("\n")
 
 # Data bitmap untuk 10 dots horizontal per baris, 256 baris
 bitmap_data = []
-for _ in range(200):
+for _ in range(600):
     bitmap_data.append(0xFF)  # Byte pertama (semua titik hitam)
 
 # ESC/POS Command: Print raster bit image
@@ -20,23 +20,23 @@ for _ in range(200):
 p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
 p._raw(bytes(bitmap_data))    # Data bitmap
 
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
+#p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
+#p._raw(bytes(bitmap_data))    # Data bitmap
 
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
+#p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
+#p._raw(bytes(bitmap_data))    # Data bitmap
 
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
+#p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
+#p._raw(bytes(bitmap_data))    # Data bitmap
 
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
+#p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
+#p._raw(bytes(bitmap_data))    # Data bitmap
 
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
+#p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
+#p._raw(bytes(bitmap_data))    # Data bitmap
 
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
+#p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
+#p._raw(bytes(bitmap_data))    # Data bitmap
 p.text("\n")
 # Feed kertas dan potong
 # p.text("256 lines of 10 horizontal dots printed\n\n")
