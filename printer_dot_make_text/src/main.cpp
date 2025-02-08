@@ -26,11 +26,11 @@ byte dots_pin[5] = {
   // 42   // e
 
   // FLIP
-  42,  // e menjadi a
-  27,  // d menjadi b
-  40,  // c menjadi c
-  28,  // b menjadi d
-  29   // a menjadi e
+  42,  // e menjadi a // PIN 12
+  27,  // d menjadi b // PIN 7
+  40,  // c menjadi c // PIN 11
+  28,  // b menjadi d // PIN 8
+  29   // a menjadi e // PIN 10
 };
 byte address_pin[6] = {
   38,  // Addr IC3

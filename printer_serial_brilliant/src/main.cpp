@@ -95,7 +95,7 @@ void loop() {
 
       // Hitung Hex CRC
       uint8_t crc_hex = send_data[0];
-      for(int i =1;i<10;i++){
+      for(int i =1;i<=13;i++){
         crc_hex = crc_hex ^ send_data[i];
       }
       send_data[14] = hex_char[(crc_hex/16)%16];
