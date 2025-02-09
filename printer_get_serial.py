@@ -1,5 +1,8 @@
 import serial
 import sys
+import tkinter as tk
+import threading
+import time
 
 # Konfigurasi port dan baudrate
 PORT = "COM6"  # Ganti sesuai dengan port yang digunakan
@@ -42,10 +45,10 @@ class data_arduino:
         self.abcde = "00000"
 
     def process_convert_address(self):
-        biner_data_PORTA = self.hex_to_binary(self.data[0:2])[::-1]  # Balik hasil biner
-        biner_data_PORTC = self.hex_to_binary(self.data[2:4])[::-1]  # Balik hasil biner
-        print(biner_data_PORTA)
-        print(biner_data_PORTC)
+        biner_data_PORTA = self.hex_to_binary(self.data[0:2])[::-1]  # Balik hasil biner dimulai dari 0 sampai 7
+        biner_data_PORTC = self.hex_to_binary(self.data[2:4])[::-1]  # Balik hasil biner dimulai dari 0 sampai 7
+        # print(biner_data_PORTA)
+        # print(biner_data_PORTC)
         address_found = True
         index_address_found = 0
         for loop_address in range(20):
@@ -56,12 +59,19 @@ class data_arduino:
                 else:
                     address_found = address_found & False
             if address_found:
+                #  42,  // e menjadi a // PIN 12
+                #  27,  // d menjadi b // PIN 7
+                #  40,  // c menjadi c // PIN 11
+                #  28,  // b menjadi d // PIN 8
+                #  29   // a menjadi e // PIN 10
                 self.address = loop_address
-                a_data = 
-                b_data = 
-                c_data = 
-                d_data = 
-                e_data = 
+                a_data = biner_data_PORTC[7]
+                b_data = biner_data_PORTA[6]
+                c_data = biner_data_PORTC[6]
+                d_data = biner_data_PORTA[7]
+                e_data = biner_data_PORTC[5]
+                self.abcde = a_data + b_data + c_data + d_data + e_data
+                # print(self.abcde)
                 break
         if address_found:
             return True
@@ -86,8 +96,10 @@ class data_arduino:
                             self.operationCode = int(data_temp[3:6])  # Indeks 4 sampai 6
                             self.index_data = int(data_temp[6:10])  # Indeks 7 sampai 10
                             self.data = data_temp[10:14]  # Indeks 11 sampai 14
-                            self.process_convert_address()
-                            return True
+                            if self.process_convert_address():
+                                return True
+                            else:
+                                return False
                         else:
                             return False
             else:
@@ -112,15 +124,50 @@ class data_arduino:
 
         # Konversi hasil XOR ke bentuk hex (uppercase untuk dibandingkan)
         calculated_checksum = f"{xor_result:02X}"
-        print(calculated_checksum)
+        # print(calculated_checksum)
     
         # Bandingkan hasil XOR yang dihitung dengan yang diberikan
         return calculated_checksum == given_checksum
+class coordinate_generate:
+    def __init__(self):
+        self.data = [0] * 100
+        self.temp_address = 0
+        self.temp_abcde = "00000"
+    # def print_data(self):
 
-    
+    def set_address(self, address, abcde):
+        # return abcde[2]
+        if (self.temp_address == address) & (self.temp_abcde == abcde):
+            return False
+        else:
+            if address < 20:
+                if address > self.temp_address:
+                    for i in range(5):
+                        self.data[(address*5)+i] = int(abcde[i])
+                    self.temp_abcde = abcde
+                    self.temp_address = address
+                else:
+                    for data in self.data:
+                        print(data,end="")
+                return True
+            else:
+                return False
+        return False
 def main():
-    arduino = data_arduino()
-    print(arduino.process_string_data("@000000913168074#"))
+    coordinate = coordinate_generate()
+    if coordinate.set_address(0,"00101"):
+        print(coordinate.data)
+        for data in coordinate.data:
+            print(data,end="")
+    # array_1000x2 = [[0] * 2 for _ in range(1000)]
+    # index_receive = 0
+    # arduino = data_arduino()
+    # if arduino.process_string_data("@000000913168074#"):
+    #     array_1000x2[index_receive][0] = arduino.address
+    #     array_1000x2[index_receive][1] = arduino.abcde
+    #     index_receive = (index_receive + 1) % 1000
+    # print(array_1000x2, index_receive)
+
     """
     try:
         with serial.Serial(PORT, BAUDRATE, timeout=1) as ser:
@@ -130,12 +177,15 @@ def main():
                     data = ser.readline().decode('utf-8').strip()
                     if data:
                         print(f"Received: {data}")
-                        char_array = list(data)  # Pecah menjadi array karakter
+                        arduino = data_arduino()
+                        if arduino.process_string_data(data):
+                            print(arduino.address,arduino.abcde)
+                        # char_array = list(data)  # Pecah menjadi array karakter
                                                 
-                        # Loop setiap karakter dalam array
-                        for char in char_array:
+                        # # Loop setiap karakter dalam array
+                        # for char in char_array:
                             
-                            print(f"{char}")
+                        #     print(f"{char}")
 
                 except KeyboardInterrupt:
                     print("\nMenutup koneksi serial...")
