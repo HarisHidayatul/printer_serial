@@ -43,6 +43,7 @@ class data_arduino:
         self.stringData = ""
         self.address = 0
         self.abcde = "00000"
+        self.isEnter = False
 
     def process_convert_address(self):
         biner_data_PORTA = self.hex_to_binary(self.data[0:2])[::-1]  # Balik hasil biner dimulai dari 0 sampai 7
@@ -96,10 +97,17 @@ class data_arduino:
                             self.operationCode = int(data_temp[3:6])  # Indeks 4 sampai 6
                             self.index_data = int(data_temp[6:10])  # Indeks 7 sampai 10
                             self.data = data_temp[10:14]  # Indeks 11 sampai 14
+                            self.process_convert_address()
                             if self.process_convert_address():
-                                return True
+                                # Ini untuk address yang telah terdefinisi
+                                # return True
+                                self.isEnter = False
                             else:
-                                return False
+                                # Ini untuk address yang tidak terdefinisi
+                                # Buat agar menjadi enter
+                                # return False
+                                self.isEnter = True
+                            return True
                         else:
                             return False
             else:
@@ -133,32 +141,73 @@ class coordinate_generate:
         self.data = [0] * 100
         self.temp_address = 0
         self.temp_abcde = "00000"
+        self.isBegin = True
+        self.spacePrint = 0
     # def print_data(self):
 
-    def set_address(self, address, abcde):
-        # return abcde[2]
-        if (self.temp_address == address) & (self.temp_abcde == abcde):
-            return False
-        else:
-            if address < 20:
-                if address > self.temp_address:
-                    for i in range(5):
-                        self.data[(address*5)+i] = int(abcde[i])
-                    self.temp_abcde = abcde
-                    self.temp_address = address
-                else:
-                    for data in self.data:
-                        print(data,end="")
-                return True
+    def print_char_biner(self, char_print):
+        for print_data in char_print:
+            if int(print_data) == 0:
+                print(' ',end='')
             else:
-                return False
-        return False
+                print('X',end='')
+            self.spacePrint = self.spacePrint + 1
+            if self.spacePrint >= 5:
+                self.spacePrint = 0
+                print(' ',end='')
+
+    def print_abcde(self, abcde):
+        for loop_abcde in abcde:
+            self.print_char_biner(loop_abcde)
+            # print(loop_abcde, end='')
+    def print_address(self, address, abcde):
+        if self.isBegin:
+            if address != 0:
+                for i in range(0,5):
+                    # print('0',end='')
+                    self.print_abcde('0')
+        for i in range(0, (int(address)-int(self.temp_address)-1)*5):  # 11 karena range tidak termasuk nilai stop
+            # print('0', end='')
+            self.print_char_biner('0')
+        self.isBegin = False
+        self.print_abcde(abcde)
+        self.temp_address = int(address)
+        self.temp_abcde = abcde
+    def set_address(self, address, abcde, isEnter):
+        # return abcde[2]
+        # if int(address) > int(self.temp_address):
+        if isEnter:
+            if self.isBegin:
+                for i in range(0,5):
+                    # print('0',end='')
+                    self.print_char_biner('0')
+            for i in range(0,(19-int(self.temp_address))*5):
+                # print('0', end='')
+                self.print_char_biner('0')
+            print("") # Lakukan print enter dan data temp hapus
+            self.temp_address = 0
+            self.temp_abcde = "00000"
+            self.isBegin = True
+        else:
+            if address < self.temp_address:
+                self.set_address(address=address,abcde=abcde, isEnter=True)
+                self.set_address(address=address,abcde=abcde, isEnter=False)
+            if (self.temp_address != address):
+                self.print_address(address=address, abcde=abcde)
+            else:
+                if (self.isBegin):
+                    self.print_address(address=address, abcde=abcde)
+            
 def main():
     coordinate = coordinate_generate()
-    if coordinate.set_address(0,"00101"):
-        print(coordinate.data)
-        for data in coordinate.data:
-            print(data,end="")
+    # coordinate.set_address(0,"01011",1)
+    # coordinate.set_address(0,"01011",0)
+    # coordinate.set_address(1,"00101",0)
+    # coordinate.set_address(1,"00101",0)
+    # coordinate.set_address(2,"00111",0)
+    # coordinate.set_address(18,"00111",0)
+    # coordinate.set_address(19,"00111",0)
+    # coordinate.set_address(3,"00111",0)
     # array_1000x2 = [[0] * 2 for _ in range(1000)]
     # index_receive = 0
     # arduino = data_arduino()
@@ -168,7 +217,7 @@ def main():
     #     index_receive = (index_receive + 1) % 1000
     # print(array_1000x2, index_receive)
 
-    """
+    
     try:
         with serial.Serial(PORT, BAUDRATE, timeout=1) as ser:
             print(f"Membuka port {PORT} dengan baudrate {BAUDRATE}")
@@ -176,10 +225,11 @@ def main():
                 try:
                     data = ser.readline().decode('utf-8').strip()
                     if data:
-                        print(f"Received: {data}")
+                        # print(f"Received: {data}")
                         arduino = data_arduino()
                         if arduino.process_string_data(data):
-                            print(arduino.address,arduino.abcde)
+                            coordinate.set_address(arduino.address,arduino.abcde,arduino.isEnter)
+                            # print(arduino.address,arduino.abcde)
                         # char_array = list(data)  # Pecah menjadi array karakter
                                                 
                         # # Loop setiap karakter dalam array
@@ -193,7 +243,7 @@ def main():
     except serial.SerialException as e:
         print(f"Gagal membuka port: {e}")
         sys.exit(1)
-    """
+    
 
 if __name__ == "__main__":
     main()
