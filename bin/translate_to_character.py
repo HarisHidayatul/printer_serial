@@ -38,7 +38,7 @@ for loop_data in temp_data:
         for x, char in enumerate(row):
             if char == 'X':
                 coordinates.append([x, y])  # Simpan koordinat (x, y)
-    printing.printing_byte(coordinates)
+    # printing.printing_byte(coordinates)
     # Output hasil
     # print(coordinates)
 
