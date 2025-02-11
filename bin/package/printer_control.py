@@ -11,21 +11,13 @@ class printer_control:
         except Exception as e:
             print(f"Error: Tidak dapat menghubungkan printer. {e}")
             self.printer = None  # Hindari error jika printer tidak terhubung
-    def printing_byte(array_byte):
+    def printing_byte(self,array_byte):
+        # Array byte ini dihitung secara horizontal
+        bitmap_data = [0x00] * 200
+        loop_index = 0
         for loop_byte in array_byte:
-
-bitmap_data = []
-for _ in range(200):
-    bitmap_data.append(0xFF)  # Byte pertama (semua titik hitam)
-
-# ESC/POS Command: Print raster bit image
-# Format: ESC * m nL nH d1...dk
-# m = Mode (0 = 8-dot single-density), nL = Width in bytes (2), nH = High byte (0)
-# C8 200 Baris Maksimal
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
-p.text("\n")
-# Feed kertas dan potong
-# p.text("256 lines of 10 horizontal dots printed\n\n")
-
-# print("256 lines of 10 dots horizontal printed successfully!")
+            bitmap_data[loop_index] = loop_byte
+            loop_index = loop_index + 1
+        self.printer._raw(b'\x1B*\x00\xC8\x00')
+        self.printer._raw(bytes(bitmap_data))    # Data bitmap
+        self.printer.text("\n")
