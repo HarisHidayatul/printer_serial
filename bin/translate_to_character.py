@@ -1,26 +1,41 @@
-from escpos.printer import Usb
+from package.open_close_file import open_close_file
 
-# Konfigurasi USB untuk Epson TM-U220B (sesuaikan dengan ID Vendor dan ID Produk)
-# ID Vendor dan Produk bisa didapatkan dari `lsusb`
-p = Usb(0x04b8, 0x0202)  # Vendor ID: 0x04b8, Product ID: 0x0202
+coordinate_raw = open_close_file("file_processing/result_raw_data.txt")
 
-# Inisialisasi printer
-# p.text("Printing 10 dots horizontal for 200 lines")
-p.text("\n")
+enter_detect = False
+data_detect = False
+temp_data = []
+for loop_row in coordinate_raw.read_txt_file_to_array():
+    if enter_detect:
+        if loop_row.strip() == "":
+            if data_detect:
+                break
+            else:
+                continue
+        else:
+            data_detect = True
+            temp_data.append(loop_row)
+    else:
+        if loop_row.strip() == "":
+            # print("Enter")
+            enter_detect = True
+for loop_data in temp_data:
+    print(loop_data)
 
-# Data bitmap untuk 10 dots horizontal per baris, 256 baris
-bitmap_data = []
-for _ in range(200):
-    bitmap_data.append(0xFF)  # Byte pertama (semua titik hitam)
+# List untuk menyimpan koordinat (x, y)
+coordinates = []
 
-# ESC/POS Command: Print raster bit image
-# Format: ESC * m nL nH d1...dk
-# m = Mode (0 = 8-dot single-density), nL = Width in bytes (2), nH = High byte (0)
-# C8 200 Baris Maksimal
-p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
-p._raw(bytes(bitmap_data))    # Data bitmap
-p.text("\n")
-# Feed kertas dan potong
-# p.text("256 lines of 10 horizontal dots printed\n\n")
+# Baris terbawah menjadi y = 0
+max_y = len(temp_data) - 1
 
-# print("256 lines of 10 dots horizontal printed successfully!")
+for y, row in enumerate(reversed(temp_data)):  # Balik agar baris terbawah jadi y = 0
+    for x, char in enumerate(row):
+        if char == 'X':
+            coordinates.append([x, y])  # Simpan koordinat (x, y)
+
+# Output hasil
+print(coordinates)
+
+    # else:
+        # print(loop_row)
+# print(coordinate_raw.read_txt_file_to_array())

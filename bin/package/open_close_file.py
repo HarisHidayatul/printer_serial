@@ -10,6 +10,13 @@ class open_close_file:
     def read_txt_file(self):
         with open(self.location_file, "r") as file:
             return file.read()
+    
+    def read_txt_file_to_array(self):
+        with open(self.location_file,"r") as file:
+            hasil_file = file.read()
+            convert_to_array =  hasil_file.split("\n")
+            return convert_to_array
+
         
     def append_csv(self, data_append):
         with open(self.location_file, mode="a", newline="") as file:  # Mode "a" untuk (append)

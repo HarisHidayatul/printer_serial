@@ -52,7 +52,7 @@ class coordinate_generate:
             if self.spacePrint >= 5:
                 self.spacePrint = 0
                 # print('0',end='')
-                self.temp_data_string = self.temp_data_string + ' '
+                self.temp_data_string = self.temp_data_string + '   '
 
     def print_abcde(self, abcde):
         for loop_abcde in abcde:
