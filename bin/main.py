@@ -19,5 +19,9 @@ def open_new_terminal(script_name="your_script.py"):
                 print("No supported terminal found")
 
 if __name__ == "__main__":
+    # 1. get_data_from_micro.py
+    # 2. process_to_coordinate.py
+    # 3. translate_coordinate.py
+    
     # open_new_terminal("get_data_from_micro.py")
     open_new_terminal("process_to_coordinate.py")

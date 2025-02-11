@@ -37,7 +37,7 @@ class coordinate_generate:
             # Menambahkan array ke dalam filtered_arrays jika memenuhi kriteria
             filtered_arrays.append(array)
             # full_zeros_added = False
-        print(filtered_arrays)
+        # print(filtered_arrays)
         return filtered_arrays
 
     def print_char_biner(self, char_print):
