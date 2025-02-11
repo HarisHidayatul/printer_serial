@@ -19,6 +19,7 @@ for _ in range(200):
 # C8 200 Baris Maksimal
 p._raw(b'\x1B*\x00\xC8\x00')  # ESC * 0 2 0 (10 dots / 8 = 2 bytes)
 p._raw(bytes(bitmap_data))    # Data bitmap
+p._raw(b'\x0C')  # Form Feed (Mencetak dan mengeluarkan buffer)
 # p.text("\n")
 # Feed kertas dan potong
 # p.text("256 lines of 10 horizontal dots printed\n\n")
