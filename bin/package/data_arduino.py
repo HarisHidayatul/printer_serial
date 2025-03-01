@@ -26,14 +26,11 @@ class data_arduino:
 
     def __init__(self):
         self.isValidData = False
-        self.deviceID = 0
-        self.operationCode = 0
-        self.index_data = 0
         self.data = "" #data berbentuk hex
         self.stringData = ""
         self.address = 0
         self.abcde = "00000"
-        self.isEnter = False
+        self.timer = 0
 
         self.header_found = False
         self.tail_found = False
@@ -42,10 +39,10 @@ class data_arduino:
     def process_convert_address(self):
         biner_data_PORTA = self.hex_to_binary(self.data[0:2])[::-1]  # Balik hasil biner dimulai dari 0 sampai 7
         biner_data_PORTC = self.hex_to_binary(self.data[2:4])[::-1]  # Balik hasil biner dimulai dari 0 sampai 7
-        # print(biner_data_PORTA)
-        # print(biner_data_PORTC)
+        timer_arduino = int(self.data[4:8],16)
+        timer_arduino = timer_arduino  - 32768
+
         address_found = True
-        index_address_found = 0
         for loop_address in range(20):
             address_found = True
             for index_biner_address in range(6):
@@ -69,6 +66,8 @@ class data_arduino:
                 # print(self.abcde)
                 break
         if address_found:
+            self.timer = timer_arduino
+            print(self.data, biner_data_PORTA, biner_data_PORTC, "Valid", self.address)
             return True
         return False
     def hex_to_binary(self,hex_string):
@@ -80,26 +79,22 @@ class data_arduino:
             self.data_temp += charData
             if charData == '#':
                 self.tail_found: True
-                if len(self.data_temp) == 17:
+                # print(len(self.data_temp))
+                if len(self.data_temp) == 15:
                     if self.verify_xor_checksum(self.data_temp):
                         self.isValidData = True
                         self.stringData = self.data_temp
-                        self.deviceID = int(self.data_temp[1:3])  # Indeks 2 sampai 3
-                        self.operationCode = int(self.data_temp[3:6])  # Indeks 4 sampai 6
-                        self.index_data = int(self.data_temp[6:10])  # Indeks 7 sampai 10
-                        self.data = self.data_temp[10:14]  # Indeks 11 sampai 14
-                        self.process_convert_address()
+                        self.data = self.data_temp[4:12]
+                        # print(self.data) 
                         # print(self.stringData)
+                        # return True
                         if self.process_convert_address():
-                            # Ini untuk address yang telah terdefinisi
-                            # return True
-                            self.isEnter = False
+                            return True
                         else:
-                            # Ini untuk address yang tidak terdefinisi
-                            # Buat agar menjadi enter
-                            # return False
-                            self.isEnter = True
-                        return True
+                            biner_data_PORTA = self.hex_to_binary(self.data[0:2])[::-1]  # Balik hasil biner dimulai dari 0 sampai 7
+                            biner_data_PORTC = self.hex_to_binary(self.data[2:4])[::-1]  # Balik hasil biner dimulai dari 0 sampai 7
+                            print(self.data, biner_data_PORTA, biner_data_PORTC, "Tidak Valid")
+                            return False
                     else:
                         return False
                 self.header_found = False
@@ -109,6 +104,7 @@ class data_arduino:
             if charData == '@':
                 self.header_found = True
                 self.data_temp += charData
+        return False
     def verify_xor_checksum(self,data):
         # Pastikan format data sesuai
         if not (data.startswith('@') and data.endswith('#') and len(data) > 3):

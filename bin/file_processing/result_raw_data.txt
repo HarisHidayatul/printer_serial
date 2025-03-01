@@ -1,11 +1,4 @@
                                                                                                                                                                 
                                                                                                                                                                 
- XXX     XX      XXX     XXX      X     XXXXX    XXXX   XXXXX    XXX     XXX                                                                                    
-X   X   X X     X   X   X   X    X  X   X       X           X   X   X   X   X                                                                                   
-X   X     X        X        X   X   X   XXXX    X          X    X   X   X   X                                                                                   
-X   X     X       X        XX   XXXXX       X   X         X      XXX     XXXX                                                                                   
-X   X     X       X         X       X       X   XXXX     X      X   X       X                                                                                   
-X   X     X     X           X       X       X   X   X    X      X   X       X                                                                                   
- XXX    XXXXX   XXXXX   XXXX        X   XXXX     XXX     X       XXX    XXXX                                                                                    
-                                                                                                                                                                
-                                                                                                                                                                
+                                                                                                                                                
+                                                                                                                                                

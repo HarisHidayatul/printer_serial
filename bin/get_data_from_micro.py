@@ -12,7 +12,7 @@ def main():
             print(f"Membuka port {PORT} dengan baudrate {BAUDRATE}")
             while True:
                 try:
-                    data = ser.readline().decode('utf-8').strip()
+                    data = ser.readline().decode('utf-8', errors="ignore").strip()
                     print(data)
                     raw_data.append_string(data)
                 except KeyboardInterrupt:
@@ -20,7 +20,7 @@ def main():
                     break
     except serial.SerialException as e:
         print(f"Gagal membuka port: {e}")
-        sys.exit(1)
+        # sys.exit(1)
     
 
 if __name__ == "__main__":

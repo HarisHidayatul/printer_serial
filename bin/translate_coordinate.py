@@ -9,8 +9,9 @@ def main():
     for read_coordinate in coordinate_raw.read_csv_file():
         address = read_coordinate[0]
         abcde = read_coordinate[1]
-        isEnter = read_coordinate[2].strip().lower() == "true"
-        coordinate_translate.set_address(int(address),abcde,bool(isEnter))
+        # isEnter = read_coordinate[2].strip().lower() == "true"
+        # coordinate_translate.set_address(int(address),abcde,bool(isEnter))
+        coordinate_translate.set_address(int(address),abcde,False)
     for loop_2d in coordinate_translate.data_coordinate_generate():
         for loop_char in loop_2d:
             string_data = string_data + loop_char
